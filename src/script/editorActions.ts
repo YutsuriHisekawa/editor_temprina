@@ -45,7 +45,7 @@ export async function handleSave(
     setDraftContent(activeTabId, content);
     Swal.fire({
       toast: true,
-      position: "bottom-end",
+      position: "top-end",
       icon: "success",
       title: "File saved successfully!",
       showConfirmButton: false,
