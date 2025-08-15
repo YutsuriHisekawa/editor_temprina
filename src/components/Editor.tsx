@@ -61,39 +61,17 @@ const Editor: React.FC = (): JSX.Element => {
 
   // Handle split editor actions
   const handleSplitEditor = () => {
-    if (!isSplit) {
-      setIsSplit(true);
-      // Simpan tab aktif sebagai tab kiri
-      setActiveSplitTab(activeTabId);
-      // Tampilkan modal untuk memilih file yang akan dibuka di panel kanan
-      Swal.fire({
-        title: '🪓 Pilih File untuk Panel Kanan',
-        text: 'File yang dipilih akan ditampilkan di panel kanan',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: '📂 Pilih File',
-        cancelButtonText: '❌ Batal',
-        showClass: {
-          popup: 'animate__animated animate__fadeInDown'
-        },
-        hideClass: {
-          popup: 'animate__animated animate__fadeOutUp'
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Implementasikan logika pemilihan file disini
-          // Misalnya membuka file browser atau menggunakan sistem yang sudah ada
-          // Untuk sementara, kita bisa menggunakan tab yang sama
-          setSplitTabId(activeTabId);
-        } else {
-          setIsSplit(false);
-        }
-      });
-    } else {
-      setIsSplit(false);
-      setSplitTabId(null);
-      setActiveSplitTab(null);
-    }
+    Swal.fire({
+      icon: 'error',
+      title: 'Fitur Split Editor Belum Aktif',
+      text: 'Fitur split editor sedang dalam pengembangan. Silakan tunggu update selanjutnya!',
+      confirmButtonText: 'OK',
+      showClass: {
+        popup: 'animate__animated animate__shakeX'
+      },
+      background: '#1e293b',
+      color: '#fff',
+    });
   };
 
   // Reference untuk menyimpan content terakhir yang di-save
@@ -857,32 +835,7 @@ const Editor: React.FC = (): JSX.Element => {
       {activeTabId ? (
         <>
           {/* Save button and run actions */}
-          <div className="absolute top-4 right-4 z-10 flex">
-            <RenderActionButtons
-              activeTabId={activeTabId}
-              isMigrating={isMigrating}
-              isDroppingMigration={isDroppingMigration}
-              isAltering={isAltering}
-              setShowMigrateModal={setShowMigrateModal}
-              setShowDropMigrationModal={setShowDropMigrationModal}
-              setShowAlterModal={setShowAlterModal}
-            />
-            <button
-              onClick={() => activeTabId && handleSave()}
-              disabled={!isDirty}
-              className={`
-                flex items-center space-x-2 px-3 py-1.5 rounded
-                ${isDirty
-                  ? "bg-red-500 hover:bg-red-600 text-white"
-                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
-                }
-                transition-colors
-              `}
-            >
-              <Save size={16} className={isSaving ? "animate-spin" : ""} />
-              <span className="text-sm">{isSaving ? "Saving..." : "Save"}</span>
-            </button>
-          </div>
+          {/* Tombol aksi utama dipindahkan ke pojok kanan bawah */}
           {/* Editor or SplitEditor */}
           {!isSplit && (
             <div
@@ -956,41 +909,39 @@ const Editor: React.FC = (): JSX.Element => {
               <RefreshCw size={16} />
             </button>
           </div>
-          {/* Zoom controls & Split screen button */}
-          <div className="absolute bottom-4 right-4 z-10 flex items-center space-x-2 text-gray-400">
-
-            <div className="w-px h-6 bg-gray-700 mx-2"></div>
-            <button
-              onClick={() => setShowMinimap((prev) => !prev)}
-              className="p-2 rounded hover:bg-gray-800"
-              title="Toggle Minimap"
-            >
-              <Map size={16} className={!showMinimap ? "opacity-50" : ""} />
-            </button>
-            <button
-              onClick={() => setFontSize((prev) => Math.max(prev - 2, 8))}
-              className="p-2 rounded hover:bg-gray-800"
-              title="Zoom Out (Ctrl+-)"
-            >
-              -
-            </button>
-            <button
-              onClick={() => setFontSize(14)}
-              className="p-2 rounded hover:bg-gray-800"
-              title="Reset Zoom (Ctrl+0)"
-            >
-              {fontSize}px
-            </button>
-            <button
-              onClick={() => setFontSize((prev) => Math.min(prev + 2, 32))}
-              className="p-2 rounded hover:bg-gray-800"
-              title="Zoom In (Ctrl++)"
-            >
-              +
-            </button>
-            {/* Split screen trigger button */}
-            {activeTabId && (
-              <>
+          {/* Zoom controls, Split screen, dan tombol aksi utama di pojok kanan bawah */}
+          <div className="absolute bottom-4 right-4 z-10 flex flex-col items-end space-y-2">
+            <div className="flex items-center space-x-2 text-gray-400 mb-2">
+              <button
+                onClick={() => setShowMinimap((prev) => !prev)}
+                className="p-2 rounded hover:bg-gray-800"
+                title="Toggle Minimap"
+              >
+                <Map size={16} className={!showMinimap ? "opacity-50" : ""} />
+              </button>
+              <button
+                onClick={() => setFontSize((prev) => Math.max(prev - 2, 8))}
+                className="p-2 rounded hover:bg-gray-800"
+                title="Zoom Out (Ctrl+-)"
+              >
+                -
+              </button>
+              <button
+                onClick={() => setFontSize(14)}
+                className="p-2 rounded hover:bg-gray-800"
+                title="Reset Zoom (Ctrl+0)"
+              >
+                {fontSize}px
+              </button>
+              <button
+                onClick={() => setFontSize((prev) => Math.min(prev + 2, 32))}
+                className="p-2 rounded hover:bg-gray-800"
+                title="Zoom In (Ctrl++)"
+              >
+                +
+              </button>
+              {/* Split screen trigger button */}
+              {activeTabId && (
                 <button
                   onClick={handleSplitEditor}
                   className={`ml-2 px-2 py-1 rounded ${
@@ -1008,8 +959,34 @@ const Editor: React.FC = (): JSX.Element => {
                     </span>
                   )}
                 </button>
-              </>
-            )}
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <RenderActionButtons
+                activeTabId={activeTabId}
+                isMigrating={isMigrating}
+                isDroppingMigration={isDroppingMigration}
+                isAltering={isAltering}
+                setShowMigrateModal={setShowMigrateModal}
+                setShowDropMigrationModal={setShowDropMigrationModal}
+                setShowAlterModal={setShowAlterModal}
+              />
+              <button
+                onClick={() => activeTabId && handleSave()}
+                disabled={!isDirty}
+                className={`
+                  flex items-center space-x-2 px-3 py-1.5 rounded
+                  ${isDirty
+                    ? "bg-red-500 hover:bg-red-600 text-white"
+                    : "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  }
+                  transition-colors
+                `}
+              >
+                <Save size={16} className={isSaving ? "animate-spin" : ""} />
+                <span className="text-sm">{isSaving ? "Saving..." : "Save"}</span>
+              </button>
+            </div>
           </div>
           {/* Reload confirmation modal */}
           <ReloadConfirmModal
